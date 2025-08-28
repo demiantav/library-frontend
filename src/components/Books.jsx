@@ -1,5 +1,12 @@
+import { useQuery } from '@apollo/client/react';
+import { ALL_BOOKS } from '../graphql/queries';
+
 const Books = () => {
-  const books = [];
+  const { loading, data } = useQuery(ALL_BOOKS);
+
+  const books = data ? data.allBooks : [];
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div>
