@@ -3,14 +3,23 @@ import { useSubscription } from '@apollo/client/react';
 import { useState } from 'react';
 import LoginForm from './components/LoginForm.jsx';
 import Layout from './components/Layout.jsx';
-import { BOOK_ADDED } from './graphql/queries.js';
+import { BOOK_ADDED, ALL_BOOKS } from './graphql/queries.js';
 
 const App = () => {
   const [token, setToken] = useState(null);
 
   useSubscription(BOOK_ADDED, {
-    onData: ({ data }) => {
+    onData: ({ client, data }) => {
       const addedBook = data.data.bookAdded;
+      const dataInStore = client.readQuery({ query: ALL_BOOKS });
+
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: {
+          allBooks: [...dataInStore.allBooks, addedBook],
+        },
+      });
+
       window.alert(`${addedBook.title} added`);
     },
   });
